@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo thiệp 20/10 - Công ty BHS</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fffafc;
+            text-align: center;
+            padding: 50px;
+            color: #444;
+        }
+        h1 {
+            color: #e05a8d;
+        }
+        form {
+            margin-top: 30px;
+            display: inline-block;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="file"] {
+            padding: 12px 18px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 1px solid #e0b4c7;
+            width: 280px;
+            margin-top: 10px;
+        }
+        input[type="file"] {
+            font-size: 16px;
+            background-color: #fff;
+        }
+        button {
+            background-color: #e05a8d;
+            border: none;
+            color: white;
+            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #d24c80;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        footer {
+            margin-top: 50px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 Thiệp chúc mừng 20/10 - Công ty BHS 🌸</h1>
+    <p>Nhập tên và tải ảnh của bạn để nhận thiệp chúc mừng tinh tế 💌</p>
+
+    <form method="POST" action="/" enctype="multipart/form-data">
+        <div>
+            <input type="text" name="name" placeholder="Nhập tên của bạn..." required>
+        </div>
+        <div>
+            <input type="file" name="photo" accept="image/*">
+        </div>
+        <button type="submit">Tạo thiệp</button>
+    </form>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <footer>© 2025 BHS Company | Designed with 💕 by Flask</footer>
+</body>
+</html>
