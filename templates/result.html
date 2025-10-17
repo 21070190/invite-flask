@@ -1,22 +1,111 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Thiệp của bạn đã sẵn sàng</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thiệp của bạn - BHS Group</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url("{{ url_for('static', filename='Nền.jpg') }}") no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden; /* Không cuộn */
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    .card-wrapper {
+      background: rgba(0, 30, 80, 0.75);
+      padding: 25px 35px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      max-width: 600px;
+      width: 85%;
+      text-align: center;
+    }
+
+    img {
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      max-height: 55vh; /* để thiệp không quá cao */
+      margin-bottom: 20px;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    a {
+      background-color: #18c7d3;
+      color: white;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: 0.3s ease;
+      font-size: 15px;
+    }
+
+    a:hover {
+      background-color: #12a9b5;
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #d0e4ff;
+      opacity: 0.9;
+    }
+
+    @media (max-height: 700px) {
+      body {
+        padding-top: 10px;
+      }
+      img {
+        max-height: 45vh;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>🌸 Thiệp của bạn đã sẵn sàng 🌸</h1>
-    <p>Đây là thiệp bạn vừa tạo:</p>
+  <h1>🎉 Thiệp của bạn đã sẵn sàng 🎉</h1>
 
-    <img src="{{ url_for('static', filename='cards/' + card_filename) }}" 
-         alt="Thiệp của bạn" 
-         width="400"><br><br>
+  <div class="card-wrapper">
+    <img src="{{ url_for('static', filename='cards/' + card_filename) }}" alt="Thiệp của bạn">
+    <div class="btn-container">
+      <a href="{{ url_for('download_card', filename=card_filename) }}">⬇️ Tải thiệp</a>
+      <a href="/">🔄 Tạo thiệp mới</a>
+    </div>
+  </div>
 
-    <a href="{{ url_for('download_card', filename=card_filename) }}">
-        <button>📩 Tải thiệp về</button>
-    </a><br><br>
-
-    <a href="/">↩️ Tạo thiệp khác</a>
+  <footer>© 2025 BHS Group</footer>
 </body>
 </html>

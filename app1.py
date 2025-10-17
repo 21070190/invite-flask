@@ -5,15 +5,15 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# --- Đường dẫn tuyệt đối ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-CARD_FOLDER = os.path.join(BASE_DIR, 'static', 'cards')
-FONT_PATH = os.path.join(BASE_DIR, 'static', 'fonts', 'Roboto_Condensed-Regular.ttf')
-BASE_CARD_PATH = os.path.join(BASE_DIR, 'static', 'invite_bg.jpg')
-
+# Thư mục lưu ảnh tạm & kết quả
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+CARD_FOLDER = os.path.join('static', 'cards')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CARD_FOLDER, exist_ok=True)
+
+# Font & nền
+FONT_PATH = os.path.join('static', 'fonts', 'Roboto_Condensed-Regular.ttf')
+BASE_CARD_PATH = os.path.join('static', 'invite_bg.jpg')
 
 @app.route('/')
 def home():
@@ -24,15 +24,18 @@ def create_card():
     name = request.form.get('name', 'Bạn')
     uploaded_file = request.files.get('image')
 
+    # Mở ảnh nền
     base_card = Image.open(BASE_CARD_PATH).convert('RGBA')
 
-    # Nếu người dùng upload ảnh
+    # Nếu người dùng upload ảnh thì dán vào thiệp
     if uploaded_file and uploaded_file.filename != '':
         img_path = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
         uploaded_file.save(img_path)
 
         user_img = Image.open(img_path).convert('RGBA')
         user_img = user_img.resize((200, 200))
+
+        # Dán ảnh lên nền
         base_card.paste(user_img, (150, 150), user_img)
 
     # Viết chữ
@@ -45,14 +48,12 @@ def create_card():
     text = f"Chúc {name} một ngày thật vui vẻ!"
     draw.text((100, 400), text, font=font, fill=(255, 105, 180))
 
-    # Lưu thiệp
+    # Lưu thiệp kết quả
     output_filename = f"card_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
     output_path = os.path.join(CARD_FOLDER, output_filename)
-    print("=== DEBUG: ===")
-    print("Saving card to:", output_path)
-
     base_card.save(output_path)
 
+    # Hiển thị kết quả (chưa tải)
     return render_template('result.html', card_filename=output_filename, name=name)
 
 @app.route('/download/<filename>')
@@ -61,3 +62,7 @@ def download_card(filename):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+#if __name__ == '__main__':
+#    port = int(os.environ.get('PORT', 5000))
+#    app.run(host='0.0.0.0', port=port)

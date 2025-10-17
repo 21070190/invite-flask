@@ -1,46 +1,104 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Tạo Thiệp 20/10 - BHS</title>
+  <meta charset="UTF-8" />
+  <title>Thiệp Chúc Mừng 20/10 - BHS Group</title>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: #fff8fb;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url("{{ url_for('static', filename='Nền.jpg') }}") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       text-align: center;
-      padding: 40px;
+      overflow: hidden;
     }
-    form {
-      display: inline-block;
-      background: #fff;
-      padding: 30px 50px;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+    .container {
+      background: rgba(0, 40, 90, 0.6);
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      width: 420px;
     }
-    input, button {
-      margin-top: 12px;
-      padding: 12px 16px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #e3b5c5;
+
+    h1 {
+      font-size: 26px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
     }
+
+    p {
+      font-size: 14px;
+      color: #d0e4ff;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      outline: none;
+      border-radius: 30px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      background-color: rgba(255, 255, 255, 0.85);
+      color: #003366;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      background-color: rgba(255, 255, 255, 1);
+    }
+
+    input::placeholder {
+      color: #4c6fae;
+      font-style: italic;
+    }
+
     button {
-      background: #e05a8d;
+      width: 100%;
+      background-color: #18c7d3;
       color: white;
       border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px;
       cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
+
     button:hover {
-      background: #d24c80;
+      background-color: #12a9b5;
+      transform: scale(1.03);
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #d0e4f5;
     }
   </style>
 </head>
 <body>
-  <h1>🌸 Tạo Thiệp Chúc Mừng 20/10 🌸</h1>
-  <form method="POST" action="/create_card" enctype="multipart/form-data">
-    <div><input type="text" name="name" placeholder="Nhập tên của bạn..." required></div>
-    <div><input type="file" name="image" accept="image/*"></div>
-    <button type="submit">Tạo thiệp</button>
-  </form>
+  <div class="container">
+    <h1>🌸 Thiệp Chúc Mừng 20/10 🌸</h1>
+    <p>Tạo thiệp chúc mừng mang phong cách BHS Property</p>
+
+    <form action="/create_card" method="POST" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Nhập tên người nhận..." required>
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">Tạo Thiệp Ngay</button>
+    </form>
+
+    <footer>© 2025 BHS Property - All Rights Reserved</footer>
+  </div>
 </body>
 </html>
