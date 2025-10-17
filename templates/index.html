@@ -35,7 +35,37 @@
             font-size: 16px;
             background-color: #fff;
         }
-        button {
+        #preview-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        #preview-img {
+            display: none;
+            max-width: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        #remove-btn {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: -10px;
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 0;
+        }
+        #remove-btn:hover {
+            background-color: #d93654;
+        }
+        button[type="submit"] {
             background-color: #e05a8d;
             border: none;
             color: white;
@@ -45,7 +75,7 @@
             cursor: pointer;
             margin-top: 20px;
         }
-        button:hover {
+        button[type="submit"]:hover {
             background-color: #d24c80;
         }
         .error {
@@ -67,9 +97,13 @@
         <div>
             <input type="text" name="name" placeholder="Nhập tên của bạn..." required>
         </div>
-        <div>
-            <input type="file" name="photo" accept="image/*">
+
+        <div id="preview-container">
+            <input type="file" name="photo" id="photo" accept="image/*">
+            <button type="button" id="remove-btn">×</button>
+            <img id="preview-img" src="#" alt="Preview">
         </div>
+
         <button type="submit">Tạo thiệp</button>
     </form>
 
@@ -78,5 +112,29 @@
     {% endif %}
 
     <footer>© 2025 BHS Company | Designed with 💕 by Flask</footer>
+
+    <script>
+        const photoInput = document.getElementById('photo');
+        const previewImg = document.getElementById('preview-img');
+        const removeBtn = document.getElementById('remove-btn');
+
+        // Khi chọn ảnh → hiển thị preview
+        photoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+                previewImg.style.display = 'block';
+                removeBtn.style.display = 'block';
+            }
+        });
+
+        // Khi bấm nút ❌ → xoá ảnh đã chọn
+        removeBtn.addEventListener('click', () => {
+            photoInput.value = ''; // Xóa file input
+            previewImg.src = '#';
+            previewImg.style.display = 'none';
+            removeBtn.style.display = 'none';
+        });
+    </script>
 </body>
 </html>

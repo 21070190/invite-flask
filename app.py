@@ -21,6 +21,7 @@ def index():
 
         # --- Nếu có ảnh khách ---
         if uploaded_file and uploaded_file.filename != '':
+            uploaded_file.stream.seek(0)
             user_img = Image.open(uploaded_file.stream).convert('RGBA')
 
             # 🔹 1. Crop ảnh thành hình vuông để không bị méo
@@ -48,7 +49,7 @@ def index():
             bg.alpha_composite(user_img, (pos_x, pos_y))
 
             # 🔹 5. Ghi tên người ngay dưới ảnh
-            font_path = "arial.ttf"
+            font_path = os.path.join(app.root_path, 'static', 'fonts', 'Roboto_Condensed-Regular.ttf')
             font = ImageFont.truetype(font_path, 50)
 
             bbox = draw.textbbox((0, 0), name, font=font)
