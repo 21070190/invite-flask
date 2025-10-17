@@ -6,11 +6,10 @@ from datetime import datetime
 app = Flask(__name__)
 
 # --- Đường dẫn tuyệt đối ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-CARD_FOLDER = os.path.join(BASE_DIR, 'static', 'cards')
-FONT_PATH = os.path.join(BASE_DIR, 'static', 'fonts', 'Roboto_Condensed-Regular.ttf')
-BASE_CARD_PATH = os.path.join(BASE_DIR, 'static', 'invite_bg.jpg')
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+CARD_FOLDER = os.path.join('static', 'cards')
+FONT_PATH = os.path.join('static', 'fonts', 'Roboto_Condensed-Regular.ttf')
+BASE_CARD_PATH = os.path.join('static', 'invite_bg.jpg')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CARD_FOLDER, exist_ok=True)
@@ -42,7 +41,7 @@ def create_card():
     except:
         font = ImageFont.load_default()
 
-    text = f"Chúc {name} một ngày thật vui vẻ!"
+    text = f"{name}"
     draw.text((100, 400), text, font=font, fill=(255, 105, 180))
 
     # Lưu thiệp
@@ -59,5 +58,8 @@ def create_card():
 def download_card(filename):
     return send_from_directory(CARD_FOLDER, filename, as_attachment=True)
 
+#if __name__ == '__main__':
+#    app.run(debug=True)
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
