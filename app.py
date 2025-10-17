@@ -1,76 +1,58 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from PIL import Image, ImageDraw, ImageFont
-import io, os, base64
+import os
+from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        name = request.form['name'].strip()
-        uploaded_file = request.files.get('photo')
+# Thư mục lưu ảnh
+UPLOAD_FOLDER = 'static/uploads'
+CARD_FOLDER = 'static/cards'
+FONT_PATH = os.path.join('static', 'Roboto-Regular.ttf')
 
-        if not name:
-            return render_template('index.html', error="Vui lòng nhập tên!")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(CARD_FOLDER, exist_ok=True)
 
-        # --- Nạp ảnh nền mẫu ---
-        bg_path = os.path.join(os.path.dirname(__file__), 'static', 'invite_bg.jpg')
-        bg = Image.open(bg_path).convert('RGBA')
-        draw = ImageDraw.Draw(bg)
-
-        # --- Nếu có ảnh người dùng ---
-        if uploaded_file and uploaded_file.filename != '':
-            uploaded_file.stream.seek(0)
-            user_img = Image.open(uploaded_file.stream).convert('RGBA')
-
-            # 🔹 1. Crop ảnh thành hình vuông
-            w, h = user_img.size
-            min_side = min(w, h)
-            user_img = user_img.crop((
-                (w - min_side) // 2,
-                (h - min_side) // 2,
-                (w + min_side) // 2,
-                (h + min_side) // 2
-            ))
-
-            # 🔹 2. Resize ảnh cho hợp bố cục
-            frame_size = 320
-            user_img = user_img.resize((frame_size, frame_size))
-
-            # 🔹 3. Bo tròn ảnh (mask)
-            mask = Image.new("L", (frame_size, frame_size), 0)
-            mask_draw = ImageDraw.Draw(mask)
-            mask_draw.ellipse((0, 0, frame_size, frame_size), fill=255)
-            user_img.putalpha(mask)
-
-            # 🔹 4. Dán ảnh vào thiệp
-            pos_x, pos_y = 120, (bg.height - frame_size) // 2 - 60
-            bg.alpha_composite(user_img, (pos_x, pos_y))
-
-            # 🔹 5. Ghi tên người dưới ảnh
-            font_path = os.path.join(app.root_path, 'static', 'fonts', 'Roboto_Condensed-Regular.ttf')
-            font = ImageFont.truetype(font_path, 50)
-            bbox = draw.textbbox((0, 0), name, font=font)
-            text_w = bbox[2] - bbox[0]
-            text_x = pos_x + (frame_size - text_w) / 2
-            text_y = pos_y + frame_size + 30
-            draw.text((text_x, text_y), name, fill=(245, 205, 150), font=font)
-
-        # --- Chuyển ảnh sang base64 để hiển thị ---
-        buf = io.BytesIO()
-        bg.convert('RGB').save(buf, format='PNG')
-        data = base64.b64encode(buf.getvalue()).decode('utf-8')
-
-        # Hiển thị trang kết quả
-        return render_template('result.html', name=name, img_data=data)
-
+@app.route('/')
+def home():
     return render_template('index.html')
 
+@app.route('/create_card', methods=['POST'])
+def create_card():
+    # Lấy dữ liệu từ form
+    name = request.form.get('name', 'Bạn')
+    uploaded_file = request.files.get('image')
 
-#if __name__ == '__main__':
-#    app.run(debug=True)
-import os
+    # Nền thiệp gốc
+    base_card_path = os.path.join('static', 'base_card.png')
+    base_card = Image.open(base_card_path).convert('RGBA')
+
+    # Nếu người dùng upload ảnh thì dán vào thiệp
+    if uploaded_file and uploaded_file.filename != '':
+        img_path = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
+        uploaded_file.save(img_path)
+
+        user_img = Image.open(img_path).convert('RGBA')
+        user_img = user_img.resize((200, 200))
+        base_card.paste(user_img, (150, 150), user_img)
+
+    # Vẽ chữ chúc mừng
+    draw = ImageDraw.Draw(base_card)
+    font = ImageFont.truetype(FONT_PATH, 40)
+    text = f"Chúc {name} một ngày thật vui vẻ!"
+    draw.text((100, 400), text, font=font, fill=(255, 105, 180))
+
+    # Lưu ảnh kết quả
+    output_filename = f"card_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+    output_path = os.path.join(CARD_FOLDER, output_filename)
+    base_card.save(output_path)
+
+    # Chuyển sang trang kết quả (hiển thị và tải về)
+    return render_template('result.html', card_filename=output_filename)
+
+@app.route('/download/<filename>')
+def download_card(filename):
+    return send_from_directory(CARD_FOLDER, filename, as_attachment=True)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)

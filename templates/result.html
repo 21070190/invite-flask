@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thiệp của bạn đã sẵn sàng</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>🌸 Thiệp của bạn đã sẵn sàng 🌸</h1>
+    <p>Đây là thiệp bạn vừa tạo:</p>
+
+    <img src="{{ url_for('static', filename='cards/' + card_filename) }}" 
+         alt="Thiệp của bạn" 
+         width="400"><br><br>
+
+    <a href="{{ url_for('download_card', filename=card_filename) }}">
+        <button>📩 Tải thiệp về</button>
+    </a><br><br>
+
+    <a href="/">↩️ Tạo thiệp khác</a>
+</body>
+</html>

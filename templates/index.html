@@ -2,54 +2,20 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thiệp của bạn - Công ty BHS</title>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fffafc;
-            text-align: center;
-            padding: 40px;
-            color: #444;
-        }
-        img {
-            margin-top: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            max-width: 90%;
-        }
-        button {
-            background-color: #e05a8d;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 18px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #d24c80; }
-    </style>
+    <title>Tạo Thiệp Chúc Mừng</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>🌸 Thiệp của bạn đã sẵn sàng 🌸</h1>
-    <p><strong>{{ name }}</strong>, đây là thiệp bạn vừa tạo:</p>
+    <h1>🌸 Tạo Thiệp Chúc Mừng 🌸</h1>
 
-    <img src="data:image/png;base64,{{ img_data }}" alt="Thiệp của bạn">
+    <form action="/create_card" method="POST" enctype="multipart/form-data">
+        <label for="name">Nhập tên người nhận:</label><br>
+        <input type="text" id="name" name="name" placeholder="Nhập tên..." required><br><br>
 
-    <br>
-    <a id="downloadLink" download="thiep_{{ name }}.png">
-        <button>Tải thiệp về 💌</button>
-    </a>
+        <label for="image">Tải ảnh của bạn (tùy chọn):</label><br>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
 
-    <script>
-        // Tạo link tải tự động từ ảnh base64
-        const imgData = "data:image/png;base64,{{ img_data }}";
-        const link = document.getElementById('downloadLink');
-        link.href = imgData;
-    </script>
-
-    <p style="margin-top:30px;">
-        <a href="/">⬅️ Tạo thiệp khác</a>
-    </p>
+        <button type="submit">✨ Tạo thiệp ✨</button>
+    </form>
 </body>
 </html>
