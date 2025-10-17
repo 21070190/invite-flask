@@ -1,21 +1,46 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Tạo Thiệp Chúc Mừng</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Tạo Thiệp 20/10 - BHS</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff8fb;
+      text-align: center;
+      padding: 40px;
+    }
+    form {
+      display: inline-block;
+      background: #fff;
+      padding: 30px 50px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      margin-top: 12px;
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #e3b5c5;
+    }
+    button {
+      background: #e05a8d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #d24c80;
+    }
+  </style>
 </head>
 <body>
-    <h1>🌸 Tạo Thiệp Chúc Mừng 🌸</h1>
-
-    <form action="/create_card" method="POST" enctype="multipart/form-data">
-        <label for="name">Nhập tên người nhận:</label><br>
-        <input type="text" id="name" name="name" placeholder="Nhập tên..." required><br><br>
-
-        <label for="image">Tải ảnh của bạn (tùy chọn):</label><br>
-        <input type="file" id="image" name="image" accept="image/*"><br><br>
-
-        <button type="submit">✨ Tạo thiệp ✨</button>
-    </form>
+  <h1>🌸 Tạo Thiệp Chúc Mừng 20/10 🌸</h1>
+  <form method="POST" action="/create_card" enctype="multipart/form-data">
+    <div><input type="text" name="name" placeholder="Nhập tên của bạn..." required></div>
+    <div><input type="file" name="image" accept="image/*"></div>
+    <button type="submit">Tạo thiệp</button>
+  </form>
 </body>
 </html>
