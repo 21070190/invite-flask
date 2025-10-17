@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thiệp của bạn - BHS Group</title>
   <style>
     * {
@@ -12,24 +12,23 @@
     }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: "Segoe UI", sans-serif;
       background: url("{{ url_for('static', filename='Nền.jpg') }}") no-repeat center center fixed;
       background-size: cover;
       color: #ffffff;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      overflow: hidden; /* Không cuộn */
+      overflow: hidden;
     }
 
     h1 {
-      color: #ffffff;
+      color: #fff;
       font-size: 26px;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-      white-space: nowrap;
+      margin-bottom: 18px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     }
 
     .card-wrapper {
@@ -37,22 +36,41 @@
       padding: 25px 35px;
       border-radius: 20px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      max-width: 600px;
       width: 85%;
+      max-width: 650px;
       text-align: center;
+      position: relative;
     }
 
-    img {
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    .card-container {
       width: 100%;
-      height: auto;
+      height: 70vh;
+      overflow: hidden;
+      border-radius: 15px;
+      position: relative;
+      background: rgba(0, 0, 0, 0.1);
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-container.dragging {
+      cursor: grabbing;
+    }
+
+    .card-image {
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
-      max-height: 55vh; /* để thiệp không quá cao */
-      margin-bottom: 20px;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+      user-select: none;
+      pointer-events: none; /* tránh sự kiện đè */
     }
 
     .btn-container {
+      margin-top: 18px;
       display: flex;
       justify-content: center;
       gap: 12px;
@@ -76,21 +94,22 @@
     }
 
     footer {
-      margin-top: 10px;
+      margin-top: 15px;
       font-size: 13px;
       color: #d0e4ff;
       opacity: 0.9;
     }
 
-    @media (max-height: 700px) {
-      body {
-        padding-top: 10px;
-      }
-      img {
-        max-height: 45vh;
-      }
+    @media (max-width: 600px) {
       h1 {
         font-size: 22px;
+      }
+      .card-wrapper {
+        width: 92%;
+        padding: 18px;
+      }
+      .card-container {
+        height: 65vh;
       }
     }
   </style>
@@ -99,13 +118,101 @@
   <h1>🎉 Thiệp của bạn đã sẵn sàng 🎉</h1>
 
   <div class="card-wrapper">
-    <img src="{{ url_for('static', filename='cards/' + card_filename) }}" alt="Thiệp của bạn">
+    <div class="card-container" id="cardContainer">
+      <img
+        src="{{ url_for('static', filename='cards/' + card_filename) }}"
+        alt="Thiệp của bạn"
+        class="card-image"
+        id="cardImage"
+      />
+    </div>
     <div class="btn-container">
       <a href="{{ url_for('download_card', filename=card_filename) }}">⬇️ Tải thiệp</a>
       <a href="/">🔄 Tạo thiệp mới</a>
     </div>
   </div>
 
-  <footer>© 2025 BHS Group</footer>
+  <footer>© 2025 BHS Property</footer>
+
+<script>
+  const img = document.getElementById("cardImage");
+  const container = document.getElementById("cardContainer");
+
+  let scale = 1;
+  let pos = { x: 0, y: 0 };
+  let start = { x: 0, y: 0 };
+  let isDragging = false;
+
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 5;
+
+  // --- Zoom bằng Ctrl + cuộn (từ giữa) ---
+  container.addEventListener("wheel", (e) => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    const oldScale = scale;
+    scale *= zoomFactor;
+
+    // Giới hạn
+    if (scale < MIN_SCALE + 0.01) {
+      scale = MIN_SCALE;
+      pos = { x: 0, y: 0 };
+    }
+    if (scale > MAX_SCALE) scale = MAX_SCALE;
+
+    // --- Zoom quanh tâm khung ---
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    pos.x -= (centerX - rect.width / 2) * (scale - oldScale) / oldScale;
+    pos.y -= (centerY - rect.height / 2) * (scale - oldScale) / oldScale;
+
+    updateTransform();
+  });
+
+  // --- Kéo ảnh khi giữ chuột trái ---
+  container.addEventListener("mousedown", (e) => {
+    if (e.button !== 0) return; // chỉ chuột trái
+    if (scale <= 1) return; // chỉ khi đã zoom
+    isDragging = true;
+    start.x = e.clientX - pos.x;
+    start.y = e.clientY - pos.y;
+    container.classList.add("dragging");
+    e.preventDefault();
+  });
+
+  container.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    pos.x = e.clientX - start.x;
+    pos.y = e.clientY - start.y;
+    updateTransform();
+  });
+
+  container.addEventListener("mouseup", stopDragging);
+  container.addEventListener("mouseleave", stopDragging);
+
+  function stopDragging() {
+    if (isDragging) {
+      isDragging = false;
+      container.classList.remove("dragging");
+    }
+  }
+
+  // --- Double click để reset ---
+  container.addEventListener("dblclick", resetImage);
+
+  function updateTransform() {
+    img.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${scale})`;
+  }
+
+  function resetImage() {
+    scale = 1;
+    pos = { x: 0, y: 0 };
+    updateTransform();
+  }
+</script>
 </body>
 </html>
