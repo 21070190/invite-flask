@@ -31,41 +31,7 @@
             width: 280px;
             margin-top: 10px;
         }
-        input[type="file"] {
-            font-size: 16px;
-            background-color: #fff;
-        }
-        #preview-container {
-            position: relative;
-            display: inline-block;
-            margin-top: 15px;
-        }
-        #preview-img {
-            display: none;
-            max-width: 200px;
-            border-radius: 10px;
-            margin-top: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        #remove-btn {
-            display: none;
-            position: absolute;
-            top: 0;
-            right: -10px;
-            background-color: #ff4d6d;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            cursor: pointer;
-            font-size: 16px;
-            line-height: 0;
-        }
-        #remove-btn:hover {
-            background-color: #d93654;
-        }
-        button[type="submit"] {
+        button {
             background-color: #e05a8d;
             border: none;
             color: white;
@@ -75,7 +41,7 @@
             cursor: pointer;
             margin-top: 20px;
         }
-        button[type="submit"]:hover {
+        button:hover {
             background-color: #d24c80;
         }
         .error {
@@ -87,25 +53,73 @@
             color: #888;
             font-size: 14px;
         }
+        /* --- Preview card --- */
+        .preview-card {
+            margin-top: 30px;
+            display: inline-block;
+            position: relative;
+            width: 400px;
+            height: 300px;
+            background: #ffe6f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .preview-text {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+        }
+        .remove-btn:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
     <h1>🌸 Thiệp chúc mừng 20/10 - Công ty BHS 🌸</h1>
-    <p>Nhập tên và tải ảnh của bạn để nhận thiệp chúc mừng tinh tế 💌</p>
+    <p>Nhập tên và tải ảnh của bạn để xem trước thiệp 💌</p>
 
     <form method="POST" action="/" enctype="multipart/form-data">
         <div>
-            <input type="text" name="name" placeholder="Nhập tên của bạn..." required>
+            <input type="text" name="name" id="nameInput" placeholder="Nhập tên của bạn..." required>
         </div>
-
-        <div id="preview-container">
-            <input type="file" name="photo" id="photo" accept="image/*">
-            <button type="button" id="remove-btn">×</button>
-            <img id="preview-img" src="#" alt="Preview">
+        <div>
+            <input type="file" name="photo" id="photoInput" accept="image/*">
         </div>
-
         <button type="submit">Tạo thiệp</button>
     </form>
+
+    <!-- Vùng hiển thị xem trước -->
+    <div class="preview-card" id="previewCard">
+        <img id="previewImage" src="" alt="Xem trước ảnh" style="display:none;">
+        <div class="preview-text" id="previewText">Tên của bạn sẽ hiện ở đây 💖</div>
+        <button class="remove-btn" id="removeBtn">✕</button>
+    </div>
 
     {% if error %}
     <p class="error">{{ error }}</p>
@@ -114,26 +128,38 @@
     <footer>© 2025 BHS Company | Designed with 💕 by Flask</footer>
 
     <script>
-        const photoInput = document.getElementById('photo');
-        const previewImg = document.getElementById('preview-img');
-        const removeBtn = document.getElementById('remove-btn');
+        const nameInput = document.getElementById('nameInput');
+        const photoInput = document.getElementById('photoInput');
+        const previewImage = document.getElementById('previewImage');
+        const previewText = document.getElementById('previewText');
+        const removeBtn = document.getElementById('removeBtn');
 
-        // Khi chọn ảnh → hiển thị preview
+        // Hiển thị tên trên thiệp khi gõ
+        nameInput.addEventListener('input', () => {
+            const name = nameInput.value.trim();
+            previewText.textContent = name ? `💐 ${name} 💐` : 'Tên của bạn sẽ hiện ở đây 💖';
+        });
+
+        // Hiển thị ảnh khi chọn
         photoInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
-                previewImg.src = URL.createObjectURL(file);
-                previewImg.style.display = 'block';
-                removeBtn.style.display = 'block';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    removeBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
         });
 
-        // Khi bấm nút ❌ → xoá ảnh đã chọn
+        // Xóa ảnh xem trước
         removeBtn.addEventListener('click', () => {
-            photoInput.value = ''; // Xóa file input
-            previewImg.src = '#';
-            previewImg.style.display = 'none';
+            previewImage.src = '';
+            previewImage.style.display = 'none';
             removeBtn.style.display = 'none';
+            photoInput.value = ''; // xoá ảnh đã chọn
         });
     </script>
 </body>
