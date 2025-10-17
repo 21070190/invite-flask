@@ -2,165 +2,54 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo thiệp 20/10 - Công ty BHS</title>
+    <title>Thiệp của bạn - Công ty BHS</title>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #fffafc;
             text-align: center;
-            padding: 50px;
+            padding: 40px;
             color: #444;
         }
-        h1 {
-            color: #e05a8d;
-        }
-        form {
-            margin-top: 30px;
-            display: inline-block;
-            background: #ffffff;
-            padding: 30px 40px;
+        img {
+            margin-top: 20px;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        input[type="text"], input[type="file"] {
-            padding: 12px 18px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: 1px solid #e0b4c7;
-            width: 280px;
-            margin-top: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            max-width: 90%;
         }
         button {
             background-color: #e05a8d;
-            border: none;
             color: white;
-            font-size: 18px;
+            border: none;
             padding: 12px 24px;
             border-radius: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #d24c80;
-        }
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-        footer {
-            margin-top: 50px;
-            color: #888;
-            font-size: 14px;
-        }
-        /* --- Preview card --- */
-        .preview-card {
-            margin-top: 30px;
-            display: inline-block;
-            position: relative;
-            width: 400px;
-            height: 300px;
-            background: #ffe6f0;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .preview-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 16px;
-        }
-        .preview-text {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
-            color: white;
-            font-size: 26px;
-            font-weight: bold;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-        }
-        .remove-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
             font-size: 18px;
+            margin-top: 20px;
             cursor: pointer;
-            display: none;
         }
-        .remove-btn:hover {
-            background-color: rgba(0,0,0,0.8);
-        }
+        button:hover { background-color: #d24c80; }
     </style>
 </head>
 <body>
-    <h1>🌸 Thiệp chúc mừng 20/10 - Công ty BHS 🌸</h1>
-    <p>Nhập tên và tải ảnh của bạn để xem trước thiệp 💌</p>
+    <h1>🌸 Thiệp của bạn đã sẵn sàng 🌸</h1>
+    <p><strong>{{ name }}</strong>, đây là thiệp bạn vừa tạo:</p>
 
-    <form method="POST" action="/" enctype="multipart/form-data">
-        <div>
-            <input type="text" name="name" id="nameInput" placeholder="Nhập tên của bạn..." required>
-        </div>
-        <div>
-            <input type="file" name="photo" id="photoInput" accept="image/*">
-        </div>
-        <button type="submit">Tạo thiệp</button>
-    </form>
+    <img src="data:image/png;base64,{{ img_data }}" alt="Thiệp của bạn">
 
-    <!-- Vùng hiển thị xem trước -->
-    <div class="preview-card" id="previewCard">
-        <img id="previewImage" src="" alt="Xem trước ảnh" style="display:none;">
-        <div class="preview-text" id="previewText">Tên của bạn sẽ hiện ở đây 💖</div>
-        <button class="remove-btn" id="removeBtn">✕</button>
-    </div>
-
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-
-    <footer>© 2025 BHS Company | Designed with 💕 by Flask</footer>
+    <br>
+    <a id="downloadLink" download="thiep_{{ name }}.png">
+        <button>Tải thiệp về 💌</button>
+    </a>
 
     <script>
-        const nameInput = document.getElementById('nameInput');
-        const photoInput = document.getElementById('photoInput');
-        const previewImage = document.getElementById('previewImage');
-        const previewText = document.getElementById('previewText');
-        const removeBtn = document.getElementById('removeBtn');
-
-        // Hiển thị tên trên thiệp khi gõ
-        nameInput.addEventListener('input', () => {
-            const name = nameInput.value.trim();
-            previewText.textContent = name ? `💐 ${name} 💐` : 'Tên của bạn sẽ hiện ở đây 💖';
-        });
-
-        // Hiển thị ảnh khi chọn
-        photoInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                    removeBtn.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Xóa ảnh xem trước
-        removeBtn.addEventListener('click', () => {
-            previewImage.src = '';
-            previewImage.style.display = 'none';
-            removeBtn.style.display = 'none';
-            photoInput.value = ''; // xoá ảnh đã chọn
-        });
+        // Tạo link tải tự động từ ảnh base64
+        const imgData = "data:image/png;base64,{{ img_data }}";
+        const link = document.getElementById('downloadLink');
+        link.href = imgData;
     </script>
+
+    <p style="margin-top:30px;">
+        <a href="/">⬅️ Tạo thiệp khác</a>
+    </p>
 </body>
 </html>
