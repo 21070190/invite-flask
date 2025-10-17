@@ -6,11 +6,10 @@ from datetime import datetime
 app = Flask(__name__)
 
 # --- Đường dẫn tuyệt đối ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-CARD_FOLDER = os.path.join(BASE_DIR, 'static', 'cards')
-FONT_PATH = os.path.join(BASE_DIR, 'static', 'fonts', 'PLAYFAIRDISPLAY-REGULAR.TTF')
-BASE_CARD_PATH = os.path.join(BASE_DIR, 'static', 'invite_bg.png')
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+CARD_FOLDER = os.path.join('static', 'cards')
+FONT_PATH = os.path.join('static', 'fonts', 'PLAYFAIRDISPLAY-REGULAR.TTF')
+BASE_CARD_PATH = os.path.join('static', 'invite_bg.png')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CARD_FOLDER, exist_ok=True)
