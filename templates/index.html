@@ -40,6 +40,33 @@
       margin-bottom: 20px;
     }
 
+    .preview-area {
+      width: 250px;
+      height: 250px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid rgba(255,255,255,0.6);
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .preview-area.dragging {
+      cursor: grabbing;
+    }
+
+    .preview-area img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      user-select: none;
+      pointer-events: none;
+      max-width: none;
+    }
+
     input[type="text"] {
       width: 100%;
       padding: 12px 15px;
