@@ -69,12 +69,21 @@
       font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .file-label:hover {
       background-color: #12a9b5;
       transform: scale(1.05);
+    }
+
+    #file-name {
+      display: block;
+      font-size: 13px;
+      color: #d0e4ff;
+      margin-bottom: 20px;
+      font-style: italic;
+      transition: all 0.3s ease;
     }
 
     button {
@@ -109,12 +118,33 @@
 
     <form id="cardForm" action="/create_card" method="POST" enctype="multipart/form-data">
       <input type="text" name="name" placeholder="Nhập tên người nhận..." required>
+
       <label for="imageInput" class="file-label">📷 Chọn ảnh</label>
       <input type="file" id="imageInput" name="image" accept="image/*" required>
+
+      <!-- Hiển thị tên file -->
+      <span id="file-name">Chưa chọn ảnh</span>
+
       <button type="submit">Tạo Thiệp Ngay</button>
     </form>
 
     <footer>© 2025 BHS Property - All Rights Reserved</footer>
   </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const fileNameDisplay = document.getElementById('file-name');
+
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+      if (file) {
+        fileNameDisplay.textContent = `Đã chọn: ${file.name}`;
+        fileNameDisplay.style.color = '#9fe1ff';
+      } else {
+        fileNameDisplay.textContent = 'Chưa chọn ảnh';
+        fileNameDisplay.style.color = '#d0e4ff';
+      }
+    });
+  </script>
 </body>
 </html>
