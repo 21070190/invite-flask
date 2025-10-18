@@ -15,14 +15,13 @@
       align-items: center;
       height: 100vh;
       text-align: center;
-      overflow: hidden;
     }
 
     .container {
-      background: rgba(0, 40, 90, 0.6);
+      background: rgba(0, 40, 90, 0.7);
       padding: 40px 50px;
       border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
       width: 420px;
     }
 
@@ -37,34 +36,7 @@
     p {
       font-size: 14px;
       color: #d0e4ff;
-      margin-bottom: 20px;
-    }
-
-    .preview-area {
-      width: 250px;
-      height: 250px;
-      margin: 0 auto 20px;
-      border-radius: 50%;
-      overflow: hidden;
-      position: relative;
-      background: rgba(255, 255, 255, 0.1);
-      border: 3px solid rgba(255,255,255,0.6);
-      touch-action: none;
-      cursor: grab;
-    }
-
-    .preview-area.dragging {
-      cursor: grabbing;
-    }
-
-    .preview-area img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(1);
-      user-select: none;
-      pointer-events: none;
-      max-width: none;
+      margin-bottom: 25px;
     }
 
     input[type="text"] {
@@ -73,9 +45,9 @@
       border: none;
       outline: none;
       border-radius: 30px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       font-size: 15px;
-      background-color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.9);
       color: #003366;
     }
 
@@ -133,118 +105,16 @@
 <body>
   <div class="container">
     <h1>🌸 Thiệp Chúc Mừng 20/10 🌸</h1>
-    <p>Điều chỉnh ảnh khuôn mặt cho vừa khung tròn rồi tạo thiệp</p>
-
-    <div class="preview-area" id="previewArea">
-      <img id="previewImage" src="" alt="Xem trước ảnh">
-    </div>
+    <p>Nhập tên và chọn ảnh để tạo thiệp chúc mừng của riêng bạn</p>
 
     <form id="cardForm" action="/create_card" method="POST" enctype="multipart/form-data">
       <input type="text" name="name" placeholder="Nhập tên người nhận..." required>
       <label for="imageInput" class="file-label">📷 Chọn ảnh</label>
       <input type="file" id="imageInput" name="image" accept="image/*" required>
-      <input type="hidden" name="image_base64" id="imageBase64">
       <button type="submit">Tạo Thiệp Ngay</button>
     </form>
 
     <footer>© 2025 BHS Property - All Rights Reserved</footer>
   </div>
-
-  <script>
-    const imageInput = document.getElementById("imageInput");
-    const previewImage = document.getElementById("previewImage");
-    const previewArea = document.getElementById("previewArea");
-    const form = document.getElementById("cardForm");
-    const imageBase64Input = document.getElementById("imageBase64");
-
-    let scale = 1, posX = 0, posY = 0, startX = 0, startY = 0, dragging = false;
-
-    // --- Chọn ảnh và hiển thị ---
-    imageInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        previewImage.src = ev.target.result;
-        scale = 1; posX = 0; posY = 0;
-        updateTransform();
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // --- Kéo ảnh ---
-    previewArea.addEventListener("mousedown", (e) => {
-      if (!previewImage.src) return;
-      dragging = true;
-      startX = e.clientX - posX;
-      startY = e.clientY - posY;
-      previewArea.classList.add("dragging");
-    });
-
-    window.addEventListener("mouseup", () => {
-      dragging = false;
-      previewArea.classList.remove("dragging");
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (!dragging) return;
-      posX = e.clientX - startX;
-      posY = e.clientY - startY;
-      updateTransform();
-    });
-
-    // --- Zoom bằng cuộn chuột ---
-    previewArea.addEventListener("wheel", (e) => {
-      if (!previewImage.src) return;
-      e.preventDefault();
-      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
-      scale = Math.min(Math.max(0.5, scale * zoomFactor), 4);
-      updateTransform();
-    });
-
-    function updateTransform() {
-      previewImage.style.transform = `translate(-50%, -50%) translate(${posX}px, ${posY}px) scale(${scale})`;
-    }
-
-    // --- Trước khi gửi form ---
-    form.addEventListener("submit", (e) => {
-      if (!previewImage.src) return;
-      e.preventDefault();
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const size = 500; // ảnh xuất
-      canvas.width = size;
-      canvas.height = size;
-
-      // Vẽ mask tròn
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-
-      // Vẽ ảnh đã transform
-      const img = new Image();
-      img.src = previewImage.src;
-      img.onload = () => {
-        const rect = previewImage.getBoundingClientRect();
-        const area = previewArea.getBoundingClientRect();
-        const dx = posX * (img.width / rect.width);
-        const dy = posY * (img.height / rect.height);
-        const s = scale * (img.width / rect.width);
-
-        const centerX = size / 2 - dx * s;
-        const centerY = size / 2 - dy * s;
-
-        const drawW = img.width * s;
-        const drawH = img.height * s;
-
-        ctx.drawImage(img, centerX - drawW / 2, centerY - drawH / 2, drawW, drawH);
-
-        imageBase64Input.value = canvas.toDataURL("image/png");
-        form.submit();
-      };
-    });
-  </script>
 </body>
 </html>
