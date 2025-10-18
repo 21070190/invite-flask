@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 # --- Đường dẫn tuyệt đối ---
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 CARD_FOLDER = os.path.join('static', 'cards')
